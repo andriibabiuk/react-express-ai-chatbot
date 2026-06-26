@@ -2,8 +2,8 @@ import axios from 'axios';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaArrowUp } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
 import { Button } from './ui/button';
-
 type FormData = {
    prompt: string;
 };
@@ -17,9 +17,11 @@ type Message = {
 const ChatBot = () => {
    const [messages, setMessages] = useState<Message[]>([]);
    const conversationId = useRef(crypto.randomUUID());
+   const [isBotTyping, setIsBotTyping] = useState(false);
    const { register, handleSubmit, reset, formState } = useForm<FormData>();
    const onValidSubmit = ({ prompt }: FormData) => {
       setMessages((prev) => [...prev, { content: prompt, role: 'user' }]);
+      setIsBotTyping(true);
       reset();
       axios
          .post<ChatResponse>('/api/chat', {
@@ -31,6 +33,7 @@ const ChatBot = () => {
                ...prev,
                { content: data.message, role: 'bot' },
             ]);
+            setIsBotTyping(false);
          });
    };
 
@@ -52,9 +55,16 @@ const ChatBot = () => {
                         : 'bg-gray-100 text-black self-start'
                   }`}
                >
-                  {message.content}
+                  <ReactMarkdown>{message.content}</ReactMarkdown>
                </p>
             ))}
+            {isBotTyping && (
+               <div className="flex self-start gap-1 px-3 py-3 bg-gray-200 rounded-xl">
+                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse"></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.2s]"></div>
+                  <div className="w-2 h-2 rounded-full bg-gray-800 animate-pulse [animation-delay:0.4s]"></div>
+               </div>
+            )}
          </div>
          <form
             // eslint-disable-next-line react-hooks/refs
