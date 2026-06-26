@@ -2,6 +2,7 @@ import { ChatSession, GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
 import express from 'express';
+import z from 'zod';
 dotenv.config();
 
 const apiKey = process.env.GOOGLE_API_KEY;
@@ -16,6 +17,14 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 const chatSessions = new Map<string, ChatSession>();
+const chatSchema = z.object({
+   prompt: z
+      .string()
+      .trim()
+      .min(1, 'Prompt is required')
+      .max(1000, 'Prompt is too long (max 1000 characters)'),
+   conversationId: z.string().uuid(),
+});
 
 async function generateAIResponse(userPrompt: string, conversationId: string) {
    try {
@@ -34,7 +43,9 @@ async function generateAIResponse(userPrompt: string, conversationId: string) {
       return response.text();
    } catch (error) {
       console.error('Error Gemini API:', error);
-      return 'Sorry, I am having trouble connecting to the AI service.';
+      throw new Error(
+         'Sorry, I am having trouble connecting to the AI service.'
+      );
    }
 }
 
@@ -46,14 +57,20 @@ app.get('/api/hello', (req: Request, res: Response) => {
 });
 
 app.post('/api/chat', async (req: Request, res: Response) => {
-   const { prompt, conversationId } = req.body;
-   if (!prompt || !conversationId) {
-      return res
-         .status(400)
-         .json({ error: 'Prompt and conversationId are required' });
+   const parseResult = chatSchema.safeParse(req.body);
+   if (!parseResult.success) {
+      res.status(400).json(parseResult.error.format());
+      return;
    }
-   const result = await generateAIResponse(prompt, conversationId);
-   res.json({ message: result });
+   const { prompt, conversationId } = parseResult.data;
+   try {
+      const result = await generateAIResponse(prompt, conversationId);
+      res.json({ message: result });
+   } catch (error) {
+      const message =
+         error instanceof Error ? error.message : 'An unknown error occurred';
+      res.status(500).json({ error: message });
+   }
 });
 
 app.listen(port, () => {
