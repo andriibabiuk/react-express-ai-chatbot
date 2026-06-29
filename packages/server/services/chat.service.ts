@@ -1,12 +1,6 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { llmClient } from '../llm/client';
 import { conversationRepository } from '../repositories/conversation.repository';
 
-const apiKey = process.env.GOOGLE_API_KEY;
-if (!apiKey) {
-   throw new Error('GOOGLE_API_KEY is not set');
-}
-
-const ai = new GoogleGenerativeAI(apiKey);
 type ChatResponse = {
    id: string;
    message: string;
@@ -17,11 +11,9 @@ export const chatService = {
       conversationId: string
    ): Promise<ChatResponse> {
       try {
-         const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
-
          let chat = conversationRepository.getLastResponseId(conversationId);
          if (!chat) {
-            chat = model.startChat({
+            chat = llmClient.startChat({
                history: [],
             });
             conversationRepository.setLastResponseId(conversationId, chat);
