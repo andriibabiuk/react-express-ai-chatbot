@@ -10,8 +10,8 @@ export const reviewService = {
       try {
          const existingSummary =
             await reviewRepository.getReviewSummary(productId);
-         if (existingSummary && existingSummary.expiresAt > new Date()) {
-            return existingSummary.content;
+         if (existingSummary) {
+            return existingSummary;
          }
          const reviews = await reviewRepository.getReviews(productId, 10);
          if (reviews.length === 0) {
