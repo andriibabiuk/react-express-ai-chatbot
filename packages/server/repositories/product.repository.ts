@@ -7,4 +7,7 @@ export const productRepository = {
          },
       });
    },
+   getProducts() {
+      return prisma.product.findMany();
+   },
 };
