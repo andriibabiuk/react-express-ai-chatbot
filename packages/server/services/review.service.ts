@@ -8,6 +8,11 @@ export const reviewService = {
    },
    async summarizeReviews(productId: number): Promise<string> {
       try {
+         const existingSummary =
+            await reviewRepository.getReviewSummary(productId);
+         if (existingSummary && existingSummary.expiresAt > new Date()) {
+            return existingSummary.content;
+         }
          const reviews = await reviewRepository.getReviews(productId, 10);
          if (reviews.length === 0) {
             return 'There are not enough reviews to generate a summary.';
@@ -25,5 +30,8 @@ export const reviewService = {
             'Sorry, I am having trouble generating the review summary.'
          );
       }
+   },
+   async checkIfProductHasReviews(productId: number) {
+      return await reviewRepository.getReviews(productId, 1);
    },
 };
