@@ -48,7 +48,7 @@ CREATE TABLE `summaries` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `productId` INTEGER NOT NULL,
     `content` TEXT NOT NULL,
-    `generatedAT` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `generatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expiresAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `summaries_productId_key`(`productId`),

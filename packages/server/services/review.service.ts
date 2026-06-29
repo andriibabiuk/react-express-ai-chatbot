@@ -16,8 +16,9 @@ export const reviewService = {
             .map((r) => r.content)
             .join('\n\n---\n\n');
          const prompt = template.replace('{{reviews}}', joinedReviews);
-
-         return llmClient.generateText(prompt);
+         const summary = await llmClient.generateText(prompt);
+         await reviewRepository.storeReviewSummary(productId, summary);
+         return summary;
       } catch (error) {
          console.error('Error summarizing reviews with Gemini API:', error);
          throw new Error(

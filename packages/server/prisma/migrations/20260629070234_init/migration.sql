@@ -25,7 +25,7 @@ CREATE TABLE `Summary` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `productId` INTEGER NOT NULL,
     `content` VARCHAR(191) NOT NULL,
-    `generatedAT` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `generatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `expiresAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Summary_productId_key`(`productId`),
