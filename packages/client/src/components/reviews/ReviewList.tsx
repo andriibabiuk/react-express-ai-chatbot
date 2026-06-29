@@ -1,5 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import Skeleton from 'react-loading-skeleton';
 import StarRating from './StarRating';
 
 type Props = {
@@ -16,23 +17,38 @@ type GetReviewsResponse = {
    summary: string | null;
    reviews: Review[];
 };
-const ReviewList = ({ productId }: Props) => {
-   const [reviewData, setReviewData] = useState<GetReviewsResponse>();
-   const fetchReviews = async () => {
-      axios
-         .get<GetReviewsResponse>(`/api/products/${productId}/reviews`)
-         .then((res) => {
-            setReviewData(res.data);
-         })
-         .catch((err) => {
-            console.error(err);
-         });
-   };
 
-   useEffect(() => {
-      fetchReviews();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
+const ReviewList = ({ productId }: Props) => {
+   const {
+      data: reviewData,
+      isLoading,
+      error,
+   } = useQuery<GetReviewsResponse, Error>({
+      queryKey: ['reviews', productId],
+      queryFn: async () => {
+         const { data } = await axios.get(`/api/products/${productId}/reviews`);
+         return data;
+      },
+   });
+
+   if (isLoading) {
+      return (
+         <div className="flex flex-col gap-5">
+            {[1, 2, 3].map((p) => (
+               <div key={p}>
+                  <Skeleton width={150} />
+                  <Skeleton width={100} />
+                  <Skeleton count={2} />
+               </div>
+            ))}
+         </div>
+      );
+   }
+   if (error) {
+      return (
+         <p className="text-red-500">Could not fetch reviews. Try again.</p>
+      );
+   }
    return (
       <div className="flex flex-col gap-5">
          {reviewData?.reviews.map((review) => (
