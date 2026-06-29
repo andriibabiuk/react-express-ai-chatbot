@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import Skeleton from 'react-loading-skeleton';
+import { useState } from 'react';
+import { HiSparkles } from 'react-icons/hi2';
+import { Button } from '../ui/button';
+import ReviewSkeleton from './ReviewSkeleton';
 import StarRating from './StarRating';
 
 type Props = {
@@ -17,8 +20,12 @@ type GetReviewsResponse = {
    summary: string | null;
    reviews: Review[];
 };
-
+type SummarizeResponse = {
+   summary: string;
+};
 const ReviewList = ({ productId }: Props) => {
+   const [summary, setSummary] = useState('');
+   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
    const {
       data: reviewData,
       isLoading,
@@ -30,16 +37,19 @@ const ReviewList = ({ productId }: Props) => {
          return data;
       },
    });
-
+   const handleSummarize = async () => {
+      setIsSummaryLoading(true);
+      const { data } = await axios.post<SummarizeResponse>(
+         `/api/products/${productId}/reviews/summarize`
+      );
+      setSummary(data.summary);
+      setIsSummaryLoading(false);
+   };
    if (isLoading) {
       return (
          <div className="flex flex-col gap-5">
             {[1, 2, 3].map((p) => (
-               <div key={p}>
-                  <Skeleton width={150} />
-                  <Skeleton width={100} />
-                  <Skeleton count={2} />
-               </div>
+               <ReviewSkeleton key={p} />
             ))}
          </div>
       );
@@ -49,17 +59,43 @@ const ReviewList = ({ productId }: Props) => {
          <p className="text-red-500">Could not fetch reviews. Try again.</p>
       );
    }
+   if (!reviewData?.reviews.length) {
+      return null;
+   }
+   const currentSummary = summary || reviewData.summary;
    return (
-      <div className="flex flex-col gap-5">
-         {reviewData?.reviews.map((review) => (
-            <div key={review.id}>
-               <div className="font-semibold">{review.author}</div>
+      <div>
+         <div className="mb-5">
+            {currentSummary ? (
+               <p>{currentSummary}</p>
+            ) : (
                <div>
-                  <StarRating value={review.rating} />
+                  <Button
+                     onClick={handleSummarize}
+                     className="cursor-pointer"
+                     disabled={isSummaryLoading}
+                  >
+                     <HiSparkles /> Summarize
+                  </Button>
+                  {isSummaryLoading && (
+                     <div className="py-3">
+                        <ReviewSkeleton />
+                     </div>
+                  )}
                </div>
-               <p className="py-2">{review.content}</p>
-            </div>
-         ))}
+            )}
+         </div>
+         <div className="flex flex-col gap-5">
+            {reviewData?.reviews.map((review) => (
+               <div key={review.id}>
+                  <div className="font-semibold">{review.author}</div>
+                  <div>
+                     <StarRating value={review.rating} />
+                  </div>
+                  <p className="py-2">{review.content}</p>
+               </div>
+            ))}
+         </div>
       </div>
    );
 };
