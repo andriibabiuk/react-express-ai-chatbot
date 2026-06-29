@@ -1,38 +1,68 @@
-# 🤖 React + Express AI Chatbot
+# 🤖 React + Express AI Chatbot & Data Analyzer
 
-A modern full-stack AI chatbot application built with **React**, **Express**, and **TypeScript**. The project combines a responsive user interface with a modular backend architecture to deliver seamless AI-powered conversations through the Google AI API.
+<p align="center">
+  <strong>A modern full-stack AI application built with React, Express, TypeScript, Prisma, and Google Gemini.</strong>
+</p>
 
-## ✨ Features
+<p align="center">
+  AI-powered conversations • Intelligent review summarization • Clean architecture • Monorepo
+</p>
 
-- 💬 Interactive chat interface with responsive design
-- ⚡ Real-time AI conversation experience
-- 📝 Message history and typing indicators
-- 🔒 End-to-end TypeScript support
-- 🎨 Modern UI built with Tailwind CSS and shadcn/ui
-- 🏗️ Modular Express backend with controllers, services, and repositories
-- 📦 Monorepo structure for organized development
-- 🚀 Fast development workflow powered by Vite and Bun
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma" />
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun" />
+</p>
 
 ---
 
-## 🛠️ Tech Stack
+## 📖 Overview
 
-### Frontend
+This project is a modern full-stack AI application built with **React**, **Express**, and **TypeScript**.
+
+It combines an interactive AI chatbot with intelligent product review summarization powered by the **Google Gemini API**. The application follows a clean monorepo architecture, providing a scalable and maintainable codebase with a clear separation between the frontend and backend.
+
+The backend uses **Prisma ORM** for database management and implements a modular **Controller → Service → Repository** architecture.
+
+---
+
+## ✨ Features
+
+- 💬 AI-powered real-time chat
+- 🤖 Google Gemini API integration
+- 📊 Automatic product review summarization
+- 🛍️ Product & review management
+- 🗄️ Prisma ORM with relational database support
+- ⚡ End-to-end TypeScript
+- 🎨 Responsive UI with Tailwind CSS & shadcn/ui
+- 🏗️ Modular backend architecture
+- 🚀 Bun workspaces monorepo
+- 🔍 Type-safe API communication
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
 
 - React 18
 - TypeScript
 - Vite
 - Tailwind CSS
-- shadcn/ui (Radix UI)
+- shadcn/ui
+- Radix UI
 
-### Backend
+## Backend
 
 - Node.js
 - Express.js
-- TypeScript
-- Google AI Studio API
+- Prisma ORM
+- Google Gemini API
 
-### Development Tools
+## Development
 
 - Bun
 - ESLint
@@ -42,11 +72,13 @@ A modern full-stack AI chatbot application built with **React**, **Express**, an
 
 ---
 
-## 📁 Project Structure
+# 📂 Project Structure
 
 ```text
 react-express-ai-chatbot/
+│
 ├── packages/
+│   │
 │   ├── client/
 │   │   ├── src/
 │   │   │   ├── components/
@@ -58,131 +90,174 @@ react-express-ai-chatbot/
 │       ├── controller/
 │       ├── services/
 │       ├── repositories/
+│       ├── llm/
+│       ├── prompts/
+│       ├── prisma/
 │       └── index.ts
 │
 ├── package.json
-├── index.ts
 └── bun.lock
 ```
 
 ---
 
-## ⚙️ Prerequisites
+# 🏛 Architecture
 
-Before running the project, ensure you have installed:
+The backend follows the **Controller → Service → Repository** pattern.
 
-- **Node.js** 18 or newer
-- **Bun** (recommended package manager)
+```text
+React Client
+      │
+      ▼
+Express Controllers
+      │
+      ▼
+Business Services
+      │
+      ▼
+Repositories
+      │
+      ▼
+Prisma ORM
+      │
+      ▼
+Database
+```
+
+For AI functionality:
+
+```text
+Client
+   │
+   ▼
+Chat Controller
+   │
+   ▼
+Chat Service
+   │
+   ▼
+Gemini Client
+   │
+   ▼
+Google Gemini API
+```
 
 ---
 
-## 🚀 Getting Started
+# ⚙️ Prerequisites
 
-### 1. Clone the repository
+Before running the project, make sure you have installed:
+
+- Node.js **18+**
+- Bun
+- PostgreSQL (or another supported relational database)
+
+---
+
+# 🚀 Installation
+
+## Clone the repository
 
 ```bash
 git clone https://github.com/andriibabiuk/react-express-ai-chatbot.git
+
 cd react-express-ai-chatbot
 ```
 
-### 2. Install dependencies
-
-Install dependencies for the root project and both workspaces.
+## Install dependencies
 
 ```bash
-# Root
 bun install
+```
 
-# Server
+---
+
+# 🗄 Database Setup
+
+Navigate to the server package and run Prisma migrations.
+
+```bash
 cd packages/server
-bun install
-cd ../..
 
-# Client
-cd packages/client
-bun install
+bunx prisma migrate dev
+
 cd ../..
 ```
 
 ---
 
-## 🔑 Environment Variables
+# 🔑 Environment Variables
 
-Create an environment file inside the server package:
+Inside **packages/server**, create a `.env` file.
 
 ```bash
-cd packages/server
 cp .env.example .env
 ```
 
-Add your Google AI API key:
+Example:
 
 ```env
-GOOGLE_API_KEY=your_google_ai_api_key
+GOOGLE_API_KEY=your_google_api_key
+DATABASE_URL=your_database_url
+PORT=3000
 ```
 
 ---
 
-## ▶️ Running the Application
+# ▶ Running the Project
 
-### Run everything from the project root (recommended)
+## Start both applications
 
 ```bash
 bun run dev
 ```
 
-This command starts both the frontend and backend concurrently.
+---
 
-### Or run each service separately
-
-#### Backend
+## Run backend only
 
 ```bash
 cd packages/server
+
 bun run dev
 ```
 
-#### Frontend
+---
+
+## Run frontend only
 
 ```bash
 cd packages/client
+
 bun run dev
 ```
 
 ---
 
-## 🌐 Default Local URLs
+# 🌐 Default URLs
 
-| Service  | URL                                                |
-| -------- | -------------------------------------------------- |
-| Frontend | `http://localhost:5173`                            |
-| Backend  | `http://localhost:3000` _(or the configured port)_ |
+| Service  | URL                   |
+| -------- | --------------------- |
+| Frontend | http://localhost:5173 |
+| Backend  | http://localhost:3000 |
 
 ---
 
-## 📦 Production Build
+# 📦 Main Modules
 
 ### Client
 
-```bash
-cd packages/client
-bun run build
-```
+- Chat UI
+- Review components
+- Shared UI components
+- API utilities
 
 ### Server
 
-Build or start commands depend on your project configuration.
-
----
-
-## 🏛️ Architecture
-
-The project follows a modular architecture with a clear separation of responsibilities:
-
-- **Client** – React application responsible for the user interface.
-- **Controller Layer** – Handles incoming HTTP requests.
-- **Service Layer** – Contains business logic and AI interaction.
-- **Repository Layer** – Manages data access and persistence.
-- **Google AI Integration** – Processes user prompts and generates responses.
-
-This separation improves maintainability, scalability, and testability.
+- Chat controller
+- Product controller
+- Review controller
+- LLM client
+- Prompt templates
+- Prisma repositories
+- Business services
